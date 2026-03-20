@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
-
+ 
 // ─── MARKET DATA ──────────────────────────────────────────────────────────────
 const MKT = {
   version:"2025-Q4", updated:"Marzo 2026",
@@ -35,13 +35,13 @@ const MKT = {
     {n:"Capital Propio",tea:0,    plazo:999,nota:"Sin costo financiero. Máximo ROI."},
   ]
 };
-
+ 
 // ─── UTILS ────────────────────────────────────────────────────────────────────
 const fmt  = (n,d=0) => n==null||isNaN(n)?"—":new Intl.NumberFormat("es-CO",{minimumFractionDigits:d,maximumFractionDigits:d}).format(n);
 const fmtM = (n) => { if(!n||isNaN(n))return"—"; const a=Math.abs(n),s=n<0?"-":""; return a>=1e9?`${s}$${(a/1e9).toFixed(1)}B`:a>=1e6?`${s}$${(a/1e6).toFixed(0)}M`:`${s}$${fmt(a)}`; };
 const fmtP = (n) => n==null||isNaN(n)?"—":`${(n*100).toFixed(1)}%`;
 const gc   = (r) => r>=0.20?"#059669":r>=0.12?"#D97706":"#DC2626";
-
+ 
 // ─── COLORES ──────────────────────────────────────────────────────────────────
 const COL = {
   blue:"#1D4ED8",  blueL:"#EFF6FF",  blueLT:"#DBEAFE",
@@ -53,7 +53,7 @@ const COL = {
   teal:"#0891B2",  tealL:"#ECFEFF",  tealLT:"#CFFAFE",
   navy:"#1E3A5F",  gray:"#6B7280",
 };
-
+ 
 // ─── DEFAULT DEAL ─────────────────────────────────────────────────────────────
 const dftDeal = () => ({
   id:Date.now(), nombre:"Nuevo Deal", direccion:"", ciudad:"itagui",
@@ -77,7 +77,7 @@ const dftDeal = () => ({
   imprevistos:0.12, status:"Analizando",
   sc_ub:7, sc_dd:5, sc_remo:7, sc_merc:7, sc_eq:6,
 });
-
+ 
 // ─── CÁLCULO DEAL ─────────────────────────────────────────────────────────────
 const calcDeal = (d) => {
   const city  = MKT.cities.find(c=>c.id===d.ciudad) || MKT.cities[0];
@@ -117,9 +117,9 @@ const calcDeal = (d) => {
   const score = s_pmc*0.20+d.sc_ub*0.15+s_est*0.10+s_mar*0.15+s_fin*0.10+d.sc_dd*0.10+s_vel*0.08+d.sc_remo*0.07+d.sc_merc*0.03+d.sc_eq*0.02;
   return {city,arvM2,arvC,pV,ingN,adq,rBase,rTot,finE,cuota,cDeuda,dias,meses,cTot,uB,iGO,iPV,iIC,uN,roiT,roiC,roiAn,moic,pmc,okPMC,score,hold,retF};
 };
-
+ 
 // ─── SHARED UI COMPONENTS ─────────────────────────────────────────────────────
-
+ 
 // Encabezado de sección con color
 const SH = ({icon,title,sub,bg=COL.blueL,bc=COL.blue,tc=COL.blue}) => (
   <div style={{background:bg,borderLeft:`3px solid ${bc}`,borderRadius:"0 8px 8px 0",padding:"8px 12px",marginBottom:12,marginTop:8}}>
@@ -129,7 +129,7 @@ const SH = ({icon,title,sub,bg=COL.blueL,bc=COL.blue,tc=COL.blue}) => (
     {sub&&<div style={{fontSize:10,color:tc,opacity:0.7,marginTop:1}}>{sub}</div>}
   </div>
 );
-
+ 
 // KPI card — borde superior de color
 const KPI = ({label,value,sub,col,small}) => (
   <div style={{background:"var(--color-background-primary)",border:"0.5px solid var(--color-border-tertiary)",borderRadius:10,padding:"11px 12px",textAlign:"center",borderTop:col?`2.5px solid ${col}`:"none"}}>
@@ -138,7 +138,7 @@ const KPI = ({label,value,sub,col,small}) => (
     {sub&&<div style={{fontSize:9,color:"var(--color-text-tertiary)",marginTop:2,lineHeight:1.3}}>{sub}</div>}
   </div>
 );
-
+ 
 // Fila resultado P&L (label izquierda, valor derecha)
 const Row = ({l,v,bold,bg,neg,indent}) => (
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 10px",background:bg||"transparent",borderBottom:"0.5px solid var(--color-border-tertiary)",paddingLeft:indent?22:10}}>
@@ -146,7 +146,7 @@ const Row = ({l,v,bold,bg,neg,indent}) => (
     <span style={{fontSize:12,fontWeight:bold?600:400,color:neg?"#DC2626":bold?"var(--color-text-primary)":"var(--color-text-primary)",marginLeft:8}}>{v}</span>
   </div>
 );
-
+ 
 // Input con formato de miles — usado en Costos y Escenarios
 const FmtInput = ({v, onChange, decimals=0, center=false, borderColor=null}) => {
   const [focused, setFocused] = useState(false);
@@ -177,7 +177,7 @@ const FmtInput = ({v, onChange, decimals=0, center=false, borderColor=null}) => 
     />
   );
 };
-
+ 
 // Input numérico con separador de miles (formato colombiano)
 const NI = ({v,onChange,step=1000000,min=0,sfx,pfx,int=false}) => {
   const [focused, setFocused] = useState(false);
@@ -185,7 +185,7 @@ const NI = ({v,onChange,step=1000000,min=0,sfx,pfx,int=false}) => {
   const displayVal = focused
     ? (v === 0 ? "" : String(v))
     : (v === 0 ? "0" : new Intl.NumberFormat("es-CO",{maximumFractionDigits:int?0:4}).format(v));
-
+ 
   return (
     <div style={{display:"flex",alignItems:"center",gap:6,marginTop:2}}>
       {pfx&&<span style={{fontSize:13,color:"var(--color-text-secondary)",flexShrink:0,fontWeight:600}}>{pfx}</span>}
@@ -213,7 +213,7 @@ const NI = ({v,onChange,step=1000000,min=0,sfx,pfx,int=false}) => {
     </div>
   );
 };
-
+ 
 // Select táctil
 const SI = ({v,onChange,opts}) => (
   <select value={v} onChange={e=>onChange(e.target.value)}
@@ -223,7 +223,7 @@ const SI = ({v,onChange,opts}) => (
     {opts.map(o=><option key={o.v||o} value={o.v||o}>{o.l||o}</option>)}
   </select>
 );
-
+ 
 // Campo de formulario (label + input apilados)
 const Field = ({label,note,children}) => (
   <div style={{padding:"10px 0",borderBottom:"0.5px solid var(--color-border-tertiary)"}}>
@@ -234,7 +234,7 @@ const Field = ({label,note,children}) => (
     {children}
   </div>
 );
-
+ 
 // Valor calculado (no editable, mostrado como resultado)
 const CalcVal = ({v,col,icon}) => (
   <div style={{padding:"10px 12px",background:col?"rgba(0,0,0,0.03)":"var(--color-background-secondary)",
@@ -243,7 +243,7 @@ const CalcVal = ({v,col,icon}) => (
     {icon&&<span>{icon}</span>}{v}
   </div>
 );
-
+ 
 // Badge score
 const Badge = ({s,label}) => (
   <span style={{padding:"3px 10px",borderRadius:20,fontSize:11,fontWeight:700,
@@ -252,7 +252,7 @@ const Badge = ({s,label}) => (
     {label||s}
   </span>
 );
-
+ 
 // Tarjeta colapsable (para listas en mobile)
 const Card = ({children,pad=true}) => (
   <div style={{background:"var(--color-background-primary)",border:"0.5px solid var(--color-border-tertiary)",
@@ -260,12 +260,12 @@ const Card = ({children,pad=true}) => (
     {children}
   </div>
 );
-
+ 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 const SKEY = "flipping_co_v4";
 const load = () => { try{const s=localStorage.getItem(SKEY);return s?JSON.parse(s):null;}catch{return null;} };
 const save = (st) => { try{localStorage.setItem(SKEY,JSON.stringify(st));}catch{} };
-
+ 
 // ─── TABS CONFIG ──────────────────────────────────────────────────────────────
 const TABS = [
   {id:"dash",   label:"Dashboard",  icon:"🏠", col:COL.blue},
@@ -281,7 +281,7 @@ const TABS = [
   {id:"port",   label:"Portafolio", icon:"💼", col:COL.navy},
   {id:"esc",    label:"Escenarios", icon:"🎲", col:COL.amber},
 ];
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: DASHBOARD
 // ══════════════════════════════════════════════════════════════════════════════
@@ -290,12 +290,12 @@ const TabDash = ({d,c,pl}) => {
   const active = pl.filter(x=>!["Cerrado","Descartado"].includes(x.status));
   const totU   = closed.reduce((s,x)=>s+calcDeal(x).uN,0);
   const roiP   = closed.length?closed.reduce((s,x)=>s+calcDeal(x).roiT,0)/closed.length:0;
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:14}}>
       <SH icon="🏠" title={d.nombre||"Deal activo"} sub={d.direccion||"Sin dirección"}
         bg={COL.blueL} bc={COL.blue} tc={COL.blue}/>
-
+ 
       {/* KPIs principales — 2 col en mobile */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
         <KPI label="Utilidad Neta"   value={fmtM(c.uN)}            col={c.uN>0?COL.green:COL.red}/>
@@ -308,7 +308,7 @@ const TabDash = ({d,c,pl}) => {
         <KPI label="PMC (70%)"  value={fmtM(c.pmc)}     col={c.okPMC?COL.green:COL.red} small sub={c.okPMC?"✅ OK":"❌ Alto"}/>
         <KPI label="Meses"      value={Math.round(c.meses)+"m"} sub={c.dias+"d"} small/>
       </div>
-
+ 
       {/* Semáforo compacto */}
       <Card>
         <SH icon="🚦" title="Semáforo de viabilidad" bg={COL.amberL} bc={COL.amber} tc={COL.amber}/>
@@ -328,7 +328,7 @@ const TabDash = ({d,c,pl}) => {
           </div>
         ))}
       </Card>
-
+ 
       {/* Regla 70% */}
       <Card>
         <SH icon="📐" title="Regla del 70%" bg={COL.greenL} bc={COL.green} tc={COL.green}/>
@@ -348,7 +348,7 @@ const TabDash = ({d,c,pl}) => {
           </div>
         ))}
       </Card>
-
+ 
       {/* Negocio */}
       <SH icon="💼" title="Negocio completo" bg={COL.purpleL} bc={COL.purple} tc={COL.purple}/>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
@@ -363,14 +363,14 @@ const TabDash = ({d,c,pl}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: DEAL (inputs del inmueble)
 // ══════════════════════════════════════════════════════════════════════════════
 const TabDeal = ({d,setD,c}) => {
   const u = (k,v) => setD(x=>({...x,[k]:v}));
   const cities = MKT.cities.map(x=>({v:x.id,l:x.name}));
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:4}}>
       {/* IDENTIFICACIÓN */}
@@ -397,7 +397,7 @@ const TabDeal = ({d,setD,c}) => {
       <Field label="Estrategia principal">
         <SI v={d.estrategia} onChange={v=>u("estrategia",v)} opts={["Fix & Flip","BRRRR","Wholesale","Renta pura"]}/>
       </Field>
-
+ 
       {/* COMPRA */}
       <SH icon="💵" title="Datos de compra" bg={COL.orangeL} bc={COL.orange} tc={COL.orange}/>
       <Field label="Precio de compra negociado" note="precio escriturado">
@@ -429,7 +429,7 @@ const TabDeal = ({d,setD,c}) => {
           <span style={{fontSize:15,fontWeight:700,color:COL.blue}}>${fmt(d.precioCompra+c.adq)}</span>
         </div>
       </div>
-
+ 
       {/* ARV */}
       <SH icon="📊" title="ARV — Valor post-remodelación" bg={COL.greenL} bc={COL.green} tc={COL.green}/>
       <Field label="Precio/m² referencia" note={`Mercado: $${fmt(c.city?.prom)}/m²`}>
@@ -450,7 +450,7 @@ const TabDeal = ({d,setD,c}) => {
       <Field label="Comisión inmobiliaria venta" note="3-4% estándar">
         <NI v={d.comVenta*100} onChange={v=>u("comVenta",v/100)} step={0.5} min={0} sfx="%"/>
       </Field>
-
+ 
       {/* CRONOGRAMA */}
       <SH icon="📅" title="Cronograma" bg={COL.purpleL} bc={COL.purple} tc={COL.purple}/>
       <Field label="Días — búsqueda y due diligence">
@@ -475,7 +475,7 @@ const TabDeal = ({d,setD,c}) => {
           <div style={{fontSize:22,fontWeight:700,color:COL.purple}}>{c.meses.toFixed(1)}</div>
         </div>
       </div>
-
+ 
       {/* FINANCIACIÓN */}
       <SH icon="🏦" title="Financiación" bg={COL.redL} bc={COL.red} tc={COL.red}/>
       <Field label="Capital propio disponible">
@@ -496,7 +496,7 @@ const TabDeal = ({d,setD,c}) => {
       <Field label="Costo total de la deuda (auto)">
         <CalcVal v={`$${fmt(c.cDeuda)}`} col={COL.red}/>
       </Field>
-
+ 
       {/* FISCAL */}
       <SH icon="📋" title="Fiscal — Colombia 2025" bg={COL.amberL} bc={COL.amber} tc={COL.amber}/>
       <Field label="Tasa ganancia ocasional" note="15% — Ley 2277/2022">
@@ -511,7 +511,150 @@ const TabDeal = ({d,setD,c}) => {
     </div>
   );
 };
-
+ 
+ 
+// ── REFERENCIA DE PRECIOS ─────────────────────────────────────────────────────
+const REF_PRECIOS = [
+  {cat:"🔨 Demoliciones",items:[
+    {n:"Demolición muros no estructurales",u:"m²",p:90000,r:"70–110k"},
+    {n:"Retiro pisos existentes",u:"m²",p:16000,r:"12–22k"},
+    {n:"Retiro escombros (volco 4m³)",u:"viaje",p:300000,r:"250–380k"},
+    {n:"Limpieza general de obra",u:"global",p:450000,r:"300–600k"},
+  ]},
+  {cat:"🏗️ Obra civil",items:[
+    {n:"Resanes, pañetes y filos",u:"m²",p:48000,r:"38–60k"},
+    {n:"Enchapes baño (cerámica E3)",u:"m²",p:90000,r:"70–130k"},
+    {n:"Enchapes cocina",u:"m²",p:85000,r:"65–120k"},
+    {n:"Muros en drywall",u:"m²",p:95000,r:"80–120k"},
+    {n:"Repello y pañete exterior",u:"m²",p:55000,r:"42–70k"},
+    {n:"Contrapiso en concreto",u:"m²",p:65000,r:"52–80k"},
+  ]},
+  {cat:"⚡ Eléctrico (RETIE)",items:[
+    {n:"Tablero bifásico 220V 20 circuitos",u:"un",p:900000,r:"700k–1.2M"},
+    {n:"Puntos eléctricos (incluye cable)",u:"pto",p:90000,r:"75–120k"},
+    {n:"Luminarias LED (con instalación)",u:"un",p:48000,r:"35–65k"},
+    {n:"Tomas e interruptores",u:"un",p:38000,r:"28–55k"},
+    {n:"Tierra física (obligatorio RETIE)",u:"global",p:350000,r:"280–450k"},
+    {n:"Certificado RETIE",u:"global",p:280000,r:"220–350k"},
+    {n:"Red voz y datos CAT6",u:"pto",p:75000,r:"60–95k"},
+  ]},
+  {cat:"🚿 Hidráulica y sanitaria",items:[
+    {n:"Red acueducto PVC presión",u:"global",p:1900000,r:"1.4–2.5M"},
+    {n:"Red alcantarillado",u:"global",p:1300000,r:"950k–1.8M"},
+    {n:"Sanitario (Corona/Grival)",u:"un",p:300000,r:"220–500k"},
+    {n:"Lavamanos con grifería",u:"un",p:320000,r:"230–520k"},
+    {n:"Ducha / regadera",u:"un",p:190000,r:"140–280k"},
+    {n:"Grifería baño (juego completo)",u:"un",p:260000,r:"180–420k"},
+    {n:"Poceta / lavadero",u:"un",p:340000,r:"260–480k"},
+    {n:"Grifería cocina",u:"un",p:190000,r:"140–300k"},
+    {n:"Calentador a gas (obligatorio)",u:"un",p:650000,r:"480k–950k"},
+    {n:"Trampa de grasas",u:"un",p:380000,r:"280–500k"},
+  ]},
+  {cat:"🪟 Ventanas y fachada",items:[
+    {n:"Ventanas aluminio + vidrio 4mm",u:"m²",p:340000,r:"270–450k"},
+    {n:"Pintura fachada + sellador",u:"m²",p:38000,r:"28–55k"},
+    {n:"Graniplast / revestimiento fachada",u:"m²",p:130000,r:"95–180k"},
+    {n:"Impermeabilización cubierta",u:"m²",p:85000,r:"65–120k"},
+    {n:"Pintura exterior + impermeabilizante",u:"m²",p:32000,r:"24–45k"},
+  ]},
+  {cat:"🎨 Acabados interiores",items:[
+    {n:"Estuco + pintura interior 2 manos",u:"m²",p:25000,r:"18–35k"},
+    {n:"Piso laminado / vinílico",u:"m²",p:70000,r:"52–95k"},
+    {n:"Piso cerámica zonas húmedas",u:"m²",p:75000,r:"55–105k"},
+    {n:"Piso porcelanato",u:"m²",p:110000,r:"85–160k"},
+    {n:"Piso madera sólida",u:"m²",p:180000,r:"140–260k"},
+    {n:"Puerta interior HDF (con marco)",u:"un",p:400000,r:"320–580k"},
+    {n:"Puerta principal metálica/madera",u:"un",p:700000,r:"520k–1.1M"},
+    {n:"Closet melamina (por alcoba)",u:"un",p:900000,r:"680k–1.4M"},
+    {n:"Muebles cocina melamina",u:"ml",p:580000,r:"420–850k"},
+    {n:"Mesón cocina (granito/mármol sint.)",u:"ml",p:320000,r:"240–520k"},
+    {n:"Espejo baño",u:"un",p:120000,r:"80–200k"},
+    {n:"Accesorios baño (jabonera, toallero)",u:"juego",p:95000,r:"65–160k"},
+  ]},
+  {cat:"🔧 Indirectos y gastos de obra",items:[
+    {n:"Director de obra / arquitecto",u:"global",p:3800000,r:"2.5–6M"},
+    {n:"Licencia de construcción Curaduría",u:"global",p:1600000,r:"800k–3.5M"},
+    {n:"Póliza todo riesgo construcción",u:"global",p:480000,r:"350–700k"},
+    {n:"Aseo final y entrega",u:"global",p:380000,r:"280–520k"},
+    {n:"Celaduría durante obra",u:"mes",p:520000,r:"400–700k"},
+    {n:"Servicios públicos en obra",u:"mes",p:180000,r:"120–260k"},
+    {n:"Herramientas y consumibles",u:"global",p:350000,r:"200–600k"},
+    {n:"Andamios (alquiler mensual)",u:"mes",p:280000,r:"180–420k"},
+  ]},
+  {cat:"🏠 Equipamiento opcional",items:[
+    {n:"Estufa a gas 4 puestos",u:"un",p:520000,r:"380k–950k"},
+    {n:"Horno empotrado",u:"un",p:680000,r:"480k–1.2M"},
+    {n:"Campana extractora",u:"un",p:420000,r:"280–750k"},
+    {n:"Aire acondicionado 9.000 BTU",u:"un",p:1800000,r:"1.4–2.8M"},
+    {n:"Citófono digital",u:"un",p:350000,r:"250–600k"},
+    {n:"Cámara de seguridad",u:"un",p:280000,r:"180–480k"},
+  ]},
+];
+ 
+const RefPrecios = () => {
+  const [open,setOpen] = useState(false);
+  const [cats,setCats] = useState({});
+  const tog = (c) => setCats(p=>({...p,[c]:!p[c]}));
+  return (
+    <div style={{marginTop:12}}>
+      <button onClick={()=>setOpen(o=>!o)} style={{
+        width:"100%",padding:"12px 14px",borderRadius:10,
+        border:`1.5px solid ${COL.amber}`,
+        background:open?COL.amberL:"var(--color-background-primary)",
+        color:COL.amber,fontWeight:700,fontSize:13,cursor:"pointer",
+        display:"flex",justifyContent:"space-between",alignItems:"center"
+      }}>
+        <span>📋 Referencia de precios — Valle de Aburrá 2025</span>
+        <span style={{fontSize:16}}>{open?"▲":"▼"}</span>
+      </button>
+      {open&&(
+        <div style={{marginTop:8,display:"flex",flexDirection:"column",gap:6}}>
+          <div style={{padding:"8px 12px",background:COL.amberL,borderRadius:8,fontSize:11,color:COL.amber,lineHeight:1.5}}>
+            Precios incluyen mano de obra + materiales · Ajustes por ciudad: Bogotá +12% · Costa -5% · Ciudades intermedias -7%
+          </div>
+          {REF_PRECIOS.map(({cat,items})=>(
+            <div key={cat} style={{border:"0.5px solid var(--color-border-tertiary)",borderRadius:10,overflow:"hidden"}}>
+              <button onClick={()=>tog(cat)} style={{
+                width:"100%",padding:"10px 14px",
+                background:"var(--color-background-secondary)",
+                border:"none",cursor:"pointer",
+                display:"flex",justifyContent:"space-between",alignItems:"center"
+              }}>
+                <span style={{fontSize:13,fontWeight:700,color:"var(--color-text-primary)"}}>{cat}</span>
+                <span style={{fontSize:13,color:"var(--color-text-secondary)"}}>{cats[cat]?"▲":"▼"}</span>
+              </button>
+              {cats[cat]&&(
+                <div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 50px 88px",padding:"5px 12px",background:"var(--color-background-secondary)",borderTop:"0.5px solid var(--color-border-tertiary)"}}>
+                    {["Ítem","Und.","Precio ref."].map((h,i)=>(
+                      <span key={i} style={{fontSize:9,fontWeight:700,color:"var(--color-text-secondary)",textTransform:"uppercase",textAlign:i>0?"right":"left"}}>{h}</span>
+                    ))}
+                  </div>
+                  {items.map((item,i)=>(
+                    <div key={i} style={{
+                      display:"grid",gridTemplateColumns:"1fr 50px 88px",
+                      padding:"8px 12px",
+                      borderTop:"0.5px solid var(--color-border-tertiary)",
+                      background:i%2===0?"var(--color-background-secondary)":"var(--color-background-primary)"
+                    }}>
+                      <div>
+                        <div style={{fontSize:12,color:"var(--color-text-primary)"}}>{item.n}</div>
+                        <div style={{fontSize:9,color:"var(--color-text-tertiary)",marginTop:1}}>Rango: ${item.r}</div>
+                      </div>
+                      <div style={{textAlign:"right",fontSize:10,color:"var(--color-text-secondary)",alignSelf:"center"}}>{item.u}</div>
+                      <div style={{textAlign:"right",fontSize:12,fontWeight:700,color:COL.green,alignSelf:"center"}}>${new Intl.NumberFormat("es-CO").format(item.p)}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: COSTOS
 // ══════════════════════════════════════════════════════════════════════════════
@@ -519,14 +662,14 @@ const TabCostos = ({d,setD,c}) => {
   const updP = (i,k,v) => setD(x=>{const p=[...x.partidas];p[i]={...p[i],[k]:v};return{...x,partidas:p};});
   const addP = () => setD(x=>({...x,partidas:[...x.partidas,{n:"Nueva partida",q:1,p:1000000}]}));
   const delP = (i) => setD(x=>({...x,partidas:x.partidas.filter((_,j)=>j!==i)}));
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:4}}>
       <SH icon="🔨" title="Presupuesto de remodelación" sub="Precios Valle de Aburrá 2025" bg={COL.redL} bc={COL.red} tc={COL.red}/>
       <div style={{padding:"6px 10px",background:COL.blueL,borderRadius:8,fontSize:11,color:COL.blue,marginBottom:4}}>
         Ajustes: Bogotá +12% · Costa -5% · Ciudades intermedias -7%
       </div>
-
+ 
       {/* Partidas como tarjetas apiladas (mobile-friendly) */}
       {d.partidas.map((p,i)=>(
         <div key={i} style={{background:"var(--color-background-primary)",border:"0.5px solid var(--color-border-tertiary)",borderRadius:10,padding:"12px 12px",marginBottom:4}}>
@@ -551,16 +694,16 @@ const TabCostos = ({d,setD,c}) => {
           </div>
         </div>
       ))}
-
+ 
       <button onClick={addP} style={{padding:"12px",fontSize:14,cursor:"pointer",borderRadius:10,
         border:`1.5px dashed ${COL.blue}`,background:COL.blueL,color:COL.blue,fontWeight:600,marginTop:4}}>
         + Agregar partida
       </button>
-
+ 
       <Field label="Imprevistos (% sobre total obra)">
         <NI v={d.imprevistos*100} onChange={v=>setD(x=>({...x,imprevistos:v/100}))} step={1} min={0} sfx="%"/>
       </Field>
-
+ 
       {/* Resumen */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:8}}>
         <KPI label="Subtotal obra"   value={`$${fmt(c.rBase)}`} small/>
@@ -571,10 +714,11 @@ const TabCostos = ({d,setD,c}) => {
         <div style={{fontSize:28,fontWeight:700,color:COL.blue}}>${fmt(c.rTot)}</div>
         <div style={{fontSize:11,color:COL.blue,opacity:0.7,marginTop:2}}>${fmt(c.rTot/d.area)}/m² · {fmtP(c.rTot/c.arvC)} del ARV</div>
       </div>
+      <RefPrecios/>
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: P&L
 // ══════════════════════════════════════════════════════════════════════════════
@@ -612,7 +756,7 @@ const TabPL = ({d,c}) => (
     </div>
   </div>
 );
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: FLUJO DE CAJA
 // ══════════════════════════════════════════════════════════════════════════════
@@ -633,18 +777,18 @@ const TabFlujo = ({d,c}) => {
   const netos = meses.map((_,j)=>items.reduce((s,r)=>s+r.vs[j],0));
   const acum  = netos.reduce((acc,v,i)=>{acc.push((acc[i-1]||0)+v);return acc;},[]);
   const capMax = Math.min(...acum);
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       <SH icon="📅" title="Flujo de caja mensual" sub="Cuándo necesitas el dinero" bg={COL.purpleL} bc={COL.purple} tc={COL.purple}/>
-
+ 
       {/* Capital máximo — destacado arriba */}
       <div style={{padding:"14px",background:COL.redL,borderRadius:10,textAlign:"center",border:`1.5px solid ${COL.red}`}}>
         <div style={{fontSize:11,fontWeight:700,color:COL.red,textTransform:"uppercase",letterSpacing:"0.05em"}}>Capital máximo requerido</div>
         <div style={{fontSize:26,fontWeight:700,color:COL.red,marginTop:2}}>{fmtM(capMax)}</div>
         <div style={{fontSize:10,color:COL.red,opacity:0.7,marginTop:2}}>Ten disponible este monto antes de iniciar</div>
       </div>
-
+ 
       {/* Tabla compacta — scroll horizontal */}
       <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:10,minWidth:500}}>
@@ -675,7 +819,7 @@ const TabFlujo = ({d,c}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: SCORE RIESGO
 // ══════════════════════════════════════════════════════════════════════════════
@@ -686,7 +830,7 @@ const TabScore = ({d,setD,c}) => {
   const s_mar = c.roiT>=.15?10:c.roiT>=.08?6:3;
   const s_fin = c.finE/d.precioCompra>=.6?3:c.finE/d.precioCompra>=.4?6:9;
   const s_vel = c.meses<=6?9:c.meses<=9?7:4;
-
+ 
   const dims = [
     {l:"Precio vs PMC (70%)",  s:s_pmc, p:.20, auto:true, desc:`Precio $${fmt(d.precioCompra)} vs PMC $${fmt(c.pmc)}`},
     {l:"Potencial de la zona", s:d.sc_ub, p:.15, key:"sc_ub", desc:"Ver columna Potencial en Radar Nacional"},
@@ -700,11 +844,11 @@ const TabScore = ({d,setD,c}) => {
     {l:"Experiencia equipo",   s:d.sc_eq, p:.02, key:"sc_eq", desc:"10=5+ obras ref. · 5=conocido · 2=nuevo"},
   ];
   const total = dims.reduce((s,x)=>s+x.s*x.p,0);
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       <SH icon="🎯" title="Score de riesgo" sub="10 dimensiones ponderadas" bg={COL.amberL} bc={COL.amber} tc={COL.amber}/>
-
+ 
       {/* Score total grande */}
       <div style={{padding:"20px 16px",background:"var(--color-background-primary)",border:`2px solid ${total>=7?COL.green:total>=5?COL.amber:COL.red}`,borderRadius:14,textAlign:"center"}}>
         <div style={{fontSize:52,fontWeight:700,color:total>=7?COL.green:total>=5?COL.amber:COL.red,lineHeight:1}}>{total.toFixed(1)}</div>
@@ -714,7 +858,7 @@ const TabScore = ({d,setD,c}) => {
         </div>
         <div style={{fontSize:11,color:"var(--color-text-tertiary)",marginTop:4}}>≥7 = Bajo · 5-7 = Medio · &lt;5 = Alto</div>
       </div>
-
+ 
       {/* Dimensiones como tarjetas */}
       {dims.map((dim,i)=>(
         <div key={i} style={{background:"var(--color-background-primary)",border:"0.5px solid var(--color-border-tertiary)",borderRadius:10,padding:"12px 12px",borderLeft:`3px solid ${dim.auto?COL.blue:COL.purple}`}}>
@@ -743,7 +887,7 @@ const TabScore = ({d,setD,c}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: ESTRATEGIAS
 // ══════════════════════════════════════════════════════════════════════════════
@@ -777,7 +921,7 @@ const ESTR_INFO = {
     meta:"Flujo mensual neto ≥0.5% del valor del inmueble. Tiempo retorno ≤12 años."
   }
 };
-
+ 
 const TabEstr = ({d,c}) => {
   const [tooltip, setTooltip] = useState(null);
   const arr     = c.city?.arriendo||2500000;
@@ -785,7 +929,7 @@ const TabEstr = ({d,c}) => {
   const cuotaR  = prest>0?prest*(.11/12)*Math.pow(1+.11/12,240)/(Math.pow(1+.11/12,240)-1):0;
   const flujoM  = arr-cuotaR;
   const capRec  = prest-d.precioCompra-c.rTot;
-
+ 
   const ests = [
     {n:"Fix & Flip", col:COL.red, icon:"🔄", desc:"Comprar · Remodelar · Vender rápido",
       badge:c.roiT>=.20?"⭐ MÁXIMO ROI":null, highlight:true,
@@ -798,7 +942,7 @@ const TabEstr = ({d,c}) => {
     {n:"Renta Pura", col:COL.green, icon:"🏘️", desc:"Comprar · Remodelar · Arrendar",
       rows:[["Flujo mensual bruto",fmtM(arr)],["Rent Yield anual",fmtP(arr*12/(d.precioCompra+c.rTot))],["Capital requerido",fmtM(d.precioCompra+c.rTot)],["ROI anual arriendo",fmtP(arr*12/(d.precioCompra+c.rTot))],["Tiempo retorno",((d.precioCompra+c.rTot)/(arr*12)).toFixed(1)+"a"],["Gestión","Continua"],["Escalabilidad","6/10"]]},
   ];
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
       <SH icon="⚔️" title="Comparador de estrategias" sub="Mismo inmueble — 4 rutas" bg={COL.tealL} bc={COL.teal} tc={COL.teal}/>
@@ -849,7 +993,7 @@ const TabEstr = ({d,c}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: CRÉDITO
 // ══════════════════════════════════════════════════════════════════════════════
@@ -866,7 +1010,7 @@ const TabCred = ({d,c}) => {
     return{...b,tm,n,cuota,costo,utilE,roi,roiAn};
   });
   const best = Math.max(...res.map(r=>r.roiAn));
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       <SH icon="🏦" title="Calculadora de crédito" sub="Fuentes reales Colombia · Superfinanciera feb-2025" bg={COL.redL} bc={COL.red} tc={COL.red}/>
@@ -893,7 +1037,7 @@ const TabCred = ({d,c}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: RADAR NACIONAL
 // ══════════════════════════════════════════════════════════════════════════════
@@ -902,7 +1046,7 @@ const TabRadar = ({setD}) => {
   const [srt,setSrt]   = useState("flip");
   const cities = [...MKT.cities].filter(c=>c.flip>=minF)
     .sort((a,b)=>srt==="flip"?b.flip-a.flip:srt==="val"?b.val24-a.val24:b.prom-a.prom);
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       <SH icon="🌎" title="Radar nacional — 20 mercados" sub={MKT.sources} bg={COL.greenL} bc={COL.green} tc={COL.green}/>
@@ -916,7 +1060,7 @@ const TabRadar = ({setD}) => {
           {[["flip","Ordenar: Potencial"],["val","Ordenar: Valoriz."],["prom","Ordenar: Precio/m²"]].map(([v,l])=><option key={v} value={v}>{l}</option>)}
         </select>
       </div>
-
+ 
       {/* Ciudades como tarjetas — no tabla */}
       {cities.map((c,i)=>(
         <div key={c.id} style={{background:"var(--color-background-primary)",border:`0.5px solid ${c.flip>=9?COL.green:c.flip>=7?COL.amber:COL.red}33`,borderRadius:12,overflow:"hidden"}}>
@@ -951,7 +1095,7 @@ const TabRadar = ({setD}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: PIPELINE
 // ══════════════════════════════════════════════════════════════════════════════
@@ -962,7 +1106,7 @@ const TabPipe = ({pl,setPl,setId,setTab}) => {
     "Due Diligence":COL.amber,"Promesa firmada":COL.orange,"En obra":COL.red,
     "En venta":COL.teal,"Cerrado":COL.green,"Descartado":"#94A3B8"
   };
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -972,7 +1116,7 @@ const TabPipe = ({pl,setPl,setId,setTab}) => {
           + Nuevo
         </button>
       </div>
-
+ 
       {pl.map((d,i)=>{
         const cv = calcDeal(d);
         const sc = statusColor[d.status]||"#64748B";
@@ -1024,7 +1168,7 @@ const TabPipe = ({pl,setPl,setId,setTab}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: PORTAFOLIO
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1038,7 +1182,7 @@ const TabPort = ({pl}) => {
   const roiP   = closed.length?closed.reduce((s,d)=>s+calcDeal(d).roiT,0)/closed.length:0;
   const roiAnP = closed.length?closed.reduce((s,d)=>s+calcDeal(d).roiAn,0)/closed.length:0;
   const inv    = active.reduce((s,d)=>s+d.precioCompra,0);
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
       <SH icon="💼" title="Salud del negocio" bg={COL.blueL} bc={COL.navy} tc={COL.navy}/>
@@ -1051,7 +1195,7 @@ const TabPort = ({pl}) => {
         <KPI label="Capital libre"   value={fmtM(cap-inv)} col={cap-inv>0?COL.green:COL.red}/>
         <KPI label="Max deals"       value={Math.floor(cap/150000000)} sub="~$150M/deal"/>
       </div>
-
+ 
       <SH icon="📊" title="KPIs históricos" bg={COL.greenL} bc={COL.green} tc={COL.green}/>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
         <KPI label="Deals cerrados"  value={closed.length}/>
@@ -1061,7 +1205,7 @@ const TabPort = ({pl}) => {
         <KPI label="ROI anual prom." value={fmtP(roiAnP)} col={gc(roiAnP)} small/>
         <KPI label="Mejor deal"      value={fmtP(closed.length?Math.max(...closed.map(d=>calcDeal(d).roiT)):0)} col={COL.green} small/>
       </div>
-
+ 
       <SH icon="🏆" title="Metas del negocio" bg={COL.purpleL} bc={COL.purple} tc={COL.purple}/>
       <Field label="Meta utilidad anual">
         <NI v={metaU} onChange={setMetaU} pfx="$"/>
@@ -1082,7 +1226,7 @@ const TabPort = ({pl}) => {
           ))}
         </div>
       )}
-
+ 
       {closed.length>0&&(
         <>
           <SH icon="📋" title="Historial cerrados" bg={COL.blueL} bc={COL.blue} tc={COL.blue}/>
@@ -1104,7 +1248,7 @@ const TabPort = ({pl}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // TAB: ESCENARIOS
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1113,7 +1257,7 @@ const TabEsc = ({d}) => {
   const [P,sP] = useState({...base,compra:Math.round(base.compra*1.10/1e6)*1e6,arv:Math.round(base.arv*.90/1e6)*1e6,remo:Math.round(base.remo*1.20/1e6)*1e6,dur:Math.round(base.dur*1.30),tasa:base.tasa+.01,desc:.05,imp:.15});
   const [B,sB] = useState({...base});
   const [O,sO] = useState({...base,compra:Math.round(base.compra*.88/1e6)*1e6,arv:Math.round(base.arv*1.10/1e6)*1e6,remo:Math.round(base.remo*.88/1e6)*1e6,dur:Math.round(base.dur*.80),tasa:Math.max(.018,base.tasa-.005),desc:.015,imp:.08});
-
+ 
   const cs = (sc) => {
     const r=sc.remo*(1+sc.imp);const ig=sc.arv*(1-sc.desc)*(1-sc.com);
     const ct=sc.compra+r+sc.acq+sc.tasa*r*sc.dur/30+sc.compra*.008;
@@ -1122,24 +1266,24 @@ const TabEsc = ({d}) => {
     return{ig,ub,un,roi,ran};
   };
   const sp=cs(P),sb=cs(B),so=cs(O);
-
+ 
   const isP = (k) => ["tasa","desc","imp"].includes(k);
   const params = [
     ["Precio compra COP","compra",1e6],["ARV estimado COP","arv",1e6],
     ["Costo remodelación COP","remo",1e6],["Días duración","dur",5],
     ["Tasa mensual %","tasa",.001],["Descuento venta %","desc",.001],["Imprevistos %","imp",.001],
   ];
-
+ 
   const SCENS = [
     {label:"🔴 Pesimista",sc:P,set:sP,bg:COL.redL,col:COL.red,res:sp},
     {label:"🟡 Base",     sc:B,set:sB,bg:COL.amberL,col:COL.amber,res:sb},
     {label:"🟢 Optimista",sc:O,set:sO,bg:COL.greenL,col:COL.green,res:so},
   ];
-
+ 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
       <SH icon="🎲" title="Análisis de escenarios" sub="Auto-contenido — no depende del deal activo" bg={COL.amberL} bc={COL.amber} tc={COL.amber}/>
-
+ 
       {/* Parámetros por escenario — cada uno en su tarjeta */}
       {SCENS.map(({label,sc,set,bg,col})=>(
         <div key={label} style={{background:"var(--color-background-primary)",border:`1.5px solid ${col}44`,borderRadius:12,overflow:"hidden"}}>
@@ -1161,7 +1305,7 @@ const TabEsc = ({d}) => {
           </div>
         </div>
       ))}
-
+ 
       {/* Resultados comparados */}
       <SH icon="📊" title="Comparación de resultados" bg={COL.blueL} bc={COL.blue} tc={COL.blue}/>
       <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:0,background:"var(--color-background-primary)",border:"0.5px solid var(--color-border-tertiary)",borderRadius:12,overflow:"hidden"}}>
@@ -1185,7 +1329,7 @@ const TabEsc = ({d}) => {
     </div>
   );
 };
-
+ 
 // ══════════════════════════════════════════════════════════════════════════════
 // MAIN APP
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1193,13 +1337,13 @@ export default function App() {
   const [tab,   setTab]   = useState("dash");
   const [pl,    setPl]    = useState(()=>{try{const s=load();return s?.pl?.length?s.pl:[dftDeal()];}catch{return[dftDeal()];}});
   const [actId, setActId] = useState(()=>{try{return load()?.actId||null;}catch{return null;}});
-
+ 
   const act  = pl.find(d=>d.id===actId)||pl[0];
   const setD = useCallback((up)=>setPl(p=>p.map(d=>d.id===act.id?(typeof up==="function"?up(d):up):d)),[act?.id]);
   const c    = useMemo(()=>calcDeal(act),[act]);
-
+ 
   useEffect(()=>{save({pl,actId:act?.id});},[pl,act?.id]);
-
+ 
   const body = () => {
     switch(tab){
       case"dash":  return <TabDash  d={act} c={c} pl={pl}/>;
@@ -1217,7 +1361,7 @@ export default function App() {
       default:     return null;
     }
   };
-
+ 
   const tabsRef = useRef(null);
   const scrollTabs = (dir) => {
     if(tabsRef.current) tabsRef.current.scrollBy({left:dir*140,behavior:"smooth"});
@@ -1227,10 +1371,10 @@ export default function App() {
     const active = tabsRef.current.querySelector(`[data-tabid="${tab}"]`);
     if(active) active.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
   },[tab]);
-
+ 
   return (
     <div style={{fontFamily:"system-ui,-apple-system,sans-serif",background:"var(--color-background-tertiary)",minHeight:"100vh"}}>
-
+ 
       {/* HEADER — sticky fijo, ancho completo, nunca se encima */}
       <div style={{
         background:"var(--color-background-primary)",
@@ -1257,7 +1401,7 @@ export default function App() {
             </select>
           )}
         </div>
-
+ 
         {/* Fila tabs con flechas */}
         <div style={{display:"flex",alignItems:"stretch",height:46}}>
           {/* Flecha ‹ */}
@@ -1269,7 +1413,7 @@ export default function App() {
             display:"flex",alignItems:"center",justifyContent:"center",
             WebkitTapHighlightColor:"transparent"
           }}>‹</button>
-
+ 
           {/* Tabs scrollables */}
           <div ref={tabsRef} style={{
             flex:1,display:"flex",overflowX:"auto",
@@ -1288,7 +1432,7 @@ export default function App() {
               </button>
             ))}
           </div>
-
+ 
           {/* Flecha › */}
           <button onClick={()=>scrollTabs(1)} style={{
             width:36,flexShrink:0,border:"none",cursor:"pointer",
@@ -1301,12 +1445,12 @@ export default function App() {
         </div>
       </div>
       </div>{/* /maxWidth header */}
-
+ 
       {/* CONTENT */}
       <div style={{maxWidth:680,margin:"0 auto",padding:"14px 14px 80px",minHeight:"100vh"}}>
         {body()}
       </div>
-
+ 
       <style>{`
         *{box-sizing:border-box;}
         ::-webkit-scrollbar{display:none;}
